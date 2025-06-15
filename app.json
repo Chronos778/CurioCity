@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "CurioCity",
+    "slug": "locafy-location-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "description": "Discover everything about any location - history, attractions, restaurants, and more!",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FF6B6B"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses location to show you information about your current area and nearby attractions.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses location to show you information about your current area and nearby attractions."
+      }
+    },
+    "android": {
+      "package": "com.curiocity.locationapp",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FF6B6B"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow CurioCity to use your location to show you information about your current area and nearby attractions."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "c36f0b2d-1095-414b-8f5d-8ac3d376dbf3"
+      }
+    }
+  }
+}
