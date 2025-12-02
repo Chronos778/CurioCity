@@ -24,13 +24,17 @@ The app provides detailed information about any location including:
 
 ## 🛠 Technology Stack
 
-- **Framework**: React Native with Expo
-- **Navigation**: React Navigation
+- **Framework**: React Native 0.81.5 with Expo 54.0.25
+- **Navigation**: React Navigation 7.1.10
+- **React Version**: 19.1.0
 - **State Management**: React Hooks
 - **Styling**: StyleSheet with dynamic theming
 - **APIs**: Multiple live APIs for comprehensive data
-- **Location Services**: Expo Location API
+- **Location Services**: Expo Location 19.0.7
 - **Permissions**: Graceful location permission handling
+- **UI Components**: Expo Vector Icons 15.0.3, Expo Linear Gradient 15.0.7
+- **Storage**: AsyncStorage 2.2.0
+- **Dev Tools**: Babel 7.20.0, react-native-dotenv 3.4.11
 
 ## 📋 Prerequisites
 
