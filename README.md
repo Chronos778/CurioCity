@@ -70,15 +70,56 @@ Then edit `.env` file and add your API keys:
 - Get Foursquare API key from https://developer.foursquare.com/
 - Get Google Gemini API key from https://ai.google.dev/
 
-4. Start the development server:
+## 📱 Running the App
+
+### Option 1: Expo Go (Recommended for development)
+Run the app instantly on your phone without building an APK:
+
 ```bash
 npm start
 ```
+- Scan the QR code with **Expo Go** app (download from Play Store/App Store)
+- Make sure your phone and PC are on the **same WiFi network**
+- If QR scan fails, try: `npx expo start --tunnel`
 
-5. Open the app:
-   - Scan QR code with Expo Go app (iOS/Android)
-   - Press 'i' for iOS simulator
-   - Press 'a' for Android emulator
+### Option 2: Android Emulator
+```bash
+npm start
+# Press 'a' to open in Android Emulator
+```
+
+### Option 3: iOS Simulator (macOS only)
+```bash
+npm start
+# Press 'i' to open in iOS Simulator
+```
+
+## 📦 Building APK
+
+### Preview APK (for testing)
+```bash
+# Login to Expo (one-time)
+eas login
+
+# Build preview APK
+npm run build:android
+```
+
+### Production APK (for distribution)
+```bash
+npm run build:android:production
+```
+
+### Development Build APK (with dev tools)
+If you need a development build with expo-dev-client:
+```bash
+# First install expo-dev-client
+npx expo install expo-dev-client
+
+# Build development APK
+npm run build:android:development
+```
+After installing the development build APK, run `npx expo start` and the app will connect to the bundler.
 
 ## 🗂 Project Structure
 
