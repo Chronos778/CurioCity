@@ -8,11 +8,18 @@ const CityInfoCard = ({ description, onReadMore, onSearch }) => {
 
   return (
     <View 
-      className="mx-4 mt-4 p-4 rounded-2xl" 
-      style={{ backgroundColor: colors.cardBackground }}
+      className="mx-6 mt-4 p-6 rounded-3xl shadow-sm" 
+      style={{ 
+        backgroundColor: colors.cardBackground,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 12,
+        elevation: 5,
+      }}
     >
       <Text 
-        className="text-base mb-4" 
+        className="text-lg mb-6 leading-7 font-medium" 
         numberOfLines={3} 
         style={{ color: colors.textSecondary }}
       >
@@ -21,21 +28,21 @@ const CityInfoCard = ({ description, onReadMore, onSearch }) => {
       
       <View className="flex-row items-center justify-between">
         <TouchableOpacity 
-          className="px-4 py-2 rounded-full border"
+          className="px-6 py-3 rounded-full border-2"
           style={{ borderColor: colors.primary }}
           onPress={onReadMore}
         >
-          <Text className="font-medium" style={{ color: colors.primary }}>
-            read more →
+          <Text className="font-bold text-base" style={{ color: colors.primary }}>
+            Read more →
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          className="w-12 h-12 rounded-full items-center justify-center"
+          className="w-14 h-14 rounded-full items-center justify-center shadow-md"
           style={{ backgroundColor: colors.primary }}
           onPress={onSearch}
         >
-          <Ionicons name="search" size={24} color="#FFFFFF" />
+          <Ionicons name="search" size={28} color="#FFFFFF" />
         </TouchableOpacity>
       </View>
     </View>

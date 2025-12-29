@@ -7,35 +7,40 @@ const PlacesToVisit = ({ data, onItemPress }) => {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
-      className="mr-4 w-32 rounded-xl overflow-hidden border"
+      className="mr-5 w-40 rounded-2xl overflow-hidden border"
       style={{ 
         backgroundColor: colors.cardBackground,
-        borderColor: colors.border
+        borderColor: colors.border,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 3,
       }}
       onPress={() => onItemPress(item)}
     >
-      <View className="h-40 w-full items-center justify-center bg-gray-200 dark:bg-gray-700">
-        <Text className="text-xs text-gray-500">place photo</Text>
+      <View className="h-48 w-full items-center justify-center bg-gray-200 dark:bg-gray-700">
+        <Text className="text-sm text-gray-500 font-medium">Place Photo</Text>
       </View>
-      <View className="p-2">
-        <Text className="font-bold text-sm mb-1" numberOfLines={1} style={{ color: colors.textPrimary }}>
+      <View className="p-4">
+        <Text className="font-bold text-base mb-1" numberOfLines={1} style={{ color: colors.textPrimary }}>
           {item.name}
         </Text>
-        <Text className="text-xs" style={{ color: colors.textSecondary }}>
-          details
+        <Text className="text-sm font-medium" style={{ color: colors.primary }}>
+          Details →
         </Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View className="mb-6">
-      <View className="flex-row items-center justify-center px-4 mb-3">
-        <View className="h-px flex-1 bg-gray-300" />
-        <Text className="text-lg font-semibold mx-3" style={{ color: colors.textPrimary }}>
+    <View className="mb-8">
+      <View className="flex-row items-center justify-center px-6 mb-6">
+        <View className="h-[1px] flex-1 bg-gray-200 dark:bg-gray-700" />
+        <Text className="text-xl font-bold mx-4 tracking-wide" style={{ color: colors.textPrimary }}>
           Places to Visit
         </Text>
-        <View className="h-px flex-1 bg-gray-300" />
+        <View className="h-[1px] flex-1 bg-gray-200 dark:bg-gray-700" />
       </View>
       
       <FlatList
@@ -44,14 +49,8 @@ const PlacesToVisit = ({ data, onItemPress }) => {
         keyExtractor={(item, index) => `place-${index}`}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 24 }}
       />
-      
-      <View className="flex-row justify-center mt-3 gap-1">
-        <View className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-        <View className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-        <View className="w-1.5 h-1.5 rounded-full bg-gray-300" />
-      </View>
     </View>
   );
 };
