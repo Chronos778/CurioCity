@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
-const HolyPlaces = ({ data, onItemPress }) => {
+const HolyPlaces = memo(({ data, onItemPress }) => {
   const { colors } = useAppTheme();
 
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <TouchableOpacity 
       className="mr-5 w-48 h-64 rounded-2xl overflow-hidden border"
       style={{ 
@@ -25,7 +25,9 @@ const HolyPlaces = ({ data, onItemPress }) => {
         <Text className="text-xs mt-2 text-center opacity-70" style={{ color: colors.textSecondary }}>{item.type}</Text>
       </View>
     </TouchableOpacity>
-  );
+  ), [colors, onItemPress]);
+
+  const keyExtractor = useCallback((item, index) => `holy-${index}`, []);
 
   return (
     <View className="mb-8">
@@ -40,13 +42,18 @@ const HolyPlaces = ({ data, onItemPress }) => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `holy-${index}`}
+        keyExtractor={keyExtractor}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 24 }}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={3}
+        windowSize={5}
       />
     </View>
   );
-};
+});
+
+HolyPlaces.displayName = 'HolyPlaces';
 
 export default HolyPlaces;

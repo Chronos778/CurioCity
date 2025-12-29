@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { Ionicons } from '@expo/vector-icons';
 
-const ServicesList = ({ data, onItemPress }) => {
+const ServicesList = memo(({ data, onItemPress }) => {
   const { colors } = useAppTheme();
 
   return (
@@ -56,6 +56,8 @@ const ServicesList = ({ data, onItemPress }) => {
       </View>
     </View>
   );
-};
+});
+
+ServicesList.displayName = 'ServicesList';
 
 export default ServicesList;

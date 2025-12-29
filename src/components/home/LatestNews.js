@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
-const LatestNews = ({ data, onItemPress }) => {
+const LatestNews = memo(({ data, onItemPress }) => {
   const { colors } = useAppTheme();
 
   return (
@@ -54,6 +54,8 @@ const LatestNews = ({ data, onItemPress }) => {
       </View>
     </View>
   );
-};
+});
+
+LatestNews.displayName = 'LatestNews';
 
 export default LatestNews;

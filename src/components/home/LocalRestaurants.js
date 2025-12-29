@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,10 +7,10 @@ import { useAppTheme } from '../../hooks/useAppTheme';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = SCREEN_WIDTH * 0.85;
 
-const LocalRestaurants = ({ data, onItemPress }) => {
+const LocalRestaurants = memo(({ data, onItemPress }) => {
   const { colors } = useAppTheme();
 
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <TouchableOpacity 
       className="mr-5 rounded-3xl overflow-hidden"
       style={{ 
@@ -80,7 +80,9 @@ const LocalRestaurants = ({ data, onItemPress }) => {
         </View>
       </View>
     </TouchableOpacity>
-  );
+  ), [colors, onItemPress]);
+
+  const keyExtractor = useCallback((item, index) => `restaurant-${index}`, []);
 
   return (
     <View className="mb-2" style={{ overflow: 'visible' }}>
@@ -95,7 +97,7 @@ const LocalRestaurants = ({ data, onItemPress }) => {
       <FlatList
         data={data}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `restaurant-${index}`}
+        keyExtractor={keyExtractor}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 20, paddingVertical: 10, paddingBottom: 20 }}
@@ -105,9 +107,14 @@ const LocalRestaurants = ({ data, onItemPress }) => {
           offset: (CARD_WIDTH + 20) * index,
           index,
         })}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={3}
+        windowSize={5}
       />
     </View>
   );
-};
+});
+
+LocalRestaurants.displayName = 'LocalRestaurants';
 
 export default LocalRestaurants;
