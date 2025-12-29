@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "react-native",
+    "skipLibCheck": true,
+    "types": [
+      "nativewind/types"
+    ],
+    "esModuleInterop": true
+  },
+  "include": [
+    "**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
+  ],
+  "extends": "expo/tsconfig.base"
+}

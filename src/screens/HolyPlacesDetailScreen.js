@@ -11,15 +11,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SIZES } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { createHolyPlacesDetailStyles } from '../styles/HolyPlacesDetailStyles';
 
 const HolyPlacesDetailScreen = ({ route, navigation }) => {
   const { location } = route.params;
   const holyPlaces = location.holyPlaces || [];
   const { colors, isDarkMode } = useAppTheme();
-
-  // Create dynamic styles based on current theme
-  const styles = createHolyPlacesDetailStyles(colors, isDarkMode);
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -47,35 +43,35 @@ const HolyPlacesDetailScreen = ({ route, navigation }) => {
   };
 
   const renderHolyPlaceItem = ({ item: place, index }) => (
-    <View style={styles.itemCard}>
-      <View style={styles.itemHeader}>
-        <View style={[styles.religionIconContainer, { backgroundColor: '#96CEB420' }]}>
+    <View className="mb-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+      <View className="flex-row items-center mb-3">
+        <View className="w-12 h-12 rounded-full items-center justify-center" style={{ backgroundColor: '#96CEB420' }}>
           <Ionicons 
             name={getReligionIcon(place.religion)} 
             size={SIZES.iconMedium} 
             color="#96CEB4" 
           />
         </View>
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemName}>{place.name}</Text>
-          <Text style={styles.itemDescription}>{formatReligion(place.religion)}</Text>
+        <View className="flex-1 ml-3">
+          <Text className="text-base font-bold" style={{ color: colors.textPrimary }}>{place.name}</Text>
+          <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>{formatReligion(place.religion)}</Text>
           {place.type && (
-            <Text style={styles.placeType}>{formatType(place.type)}</Text>
+            <Text className="text-xs mt-0.5" style={{ color: colors.textSecondary }}>{formatType(place.type)}</Text>
           )}
         </View>
       </View>
 
-      <View style={styles.itemDetails}>
+      <View className="gap-2">
         {place.address && (
-          <View style={styles.addressContainer}>
+          <View className="flex-row items-start">
             <Ionicons name="location" size={SIZES.iconSmall} color={colors.textSecondary} />
-            <Text style={styles.addressText} numberOfLines={2} ellipsizeMode="tail">{place.address}</Text>
+            <Text className="flex-1 text-xs ml-2" numberOfLines={2} ellipsizeMode="tail" style={{ color: colors.textSecondary }}>{place.address}</Text>
           </View>
         )}
 
-        <View style={styles.coordinatesContainer}>
+        <View className="flex-row items-center">
           <Ionicons name="navigate" size={SIZES.iconSmall} color={colors.textSecondary} />
-          <Text style={styles.coordinatesText} numberOfLines={1} ellipsizeMode="tail">
+          <Text className="flex-1 text-xs ml-2" numberOfLines={1} ellipsizeMode="tail" style={{ color: colors.textSecondary }}>
             {place.coordinates?.latitude?.toFixed(3) || '0.000'}, {place.coordinates?.longitude?.toFixed(3) || '0.000'}
           </Text>
         </View>
@@ -83,53 +79,55 @@ const HolyPlacesDetailScreen = ({ route, navigation }) => {
     </View>
   );
 
-  return (    <SafeAreaView style={styles.container}>
+  return (    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
       <LinearGradient
         colors={[colors.primary, colors.primaryDark]}
-        style={styles.header}
+        className="flex-row items-center px-4 py-3 border-b"
+        style={{ borderBottomColor: colors.border }}
       >
         <TouchableOpacity
-          style={styles.backButton}
+          className="p-2"
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.textWhite} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Holy Places</Text>
-        <View style={styles.headerRight}>
+        <Text className="flex-1 text-lg font-semibold text-center" style={{ color: colors.textWhite }}>Holy Places</Text>
+        <View className="p-2">
           <Ionicons name="flower" size={24} color={colors.textWhite} />
         </View>      </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Stats Section */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{holyPlaces.length}</Text>
-            <Text style={styles.statLabel}>Sacred Sites</Text>
+        <View className="flex-row mx-4 my-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{holyPlaces.length}</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Sacred Sites</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {holyPlaces.filter(place => place.religion).length}
             </Text>
-            <Text style={styles.statLabel}>Different Faiths</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Different Faiths</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {holyPlaces.filter(place => place.type).length}
             </Text>
-            <Text style={styles.statLabel}>Place Types</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Place Types</Text>
           </View>
         </View>
 
         {holyPlaces.length > 0 ? (
           <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Sacred Places</Text>
-              <Text style={styles.sectionSubtitle}>Places of worship and spiritual significance in {location.name}</Text>
+            <View className="px-4 mb-3">
+              <Text className="text-xl font-bold mb-1" style={{ color: colors.textPrimary }}>Sacred Places</Text>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>Places of worship and spiritual significance in {location.name}</Text>
             </View>
             
+            <View className="px-4">
             <FlatList
               data={holyPlaces}
               renderItem={renderHolyPlaceItem}
@@ -137,12 +135,13 @@ const HolyPlacesDetailScreen = ({ route, navigation }) => {
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
+            </View>
           </>
         ) : (
-          <View style={styles.emptyState}>
+          <View className="flex-1 items-center justify-center px-8 py-16">
             <Ionicons name="flower-outline" size={60} color={colors.textSecondary} />
-            <Text style={styles.emptyTitle}>No Holy Places Found</Text>
-            <Text style={styles.emptyDescription}>
+            <Text className="text-xl font-bold mt-4 text-center" style={{ color: colors.textPrimary }}>No Holy Places Found</Text>
+            <Text className="text-sm mt-2 text-center" style={{ color: colors.textSecondary }}>
               We couldn't find any places of worship for {location.name}. This might be a remote area or the data might be loading.
             </Text>
           </View>

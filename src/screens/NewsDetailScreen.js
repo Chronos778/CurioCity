@@ -13,15 +13,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SIZES } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { createNewsDetailStyles } from '../styles/NewsDetailStyles';
 
 const NewsDetailScreen = ({ route, navigation }) => {
   const { location } = route.params;
   const { colors, isDarkMode } = useAppTheme();
   const news = location.news || [];
-
-  // Create dynamic styles based on current theme
-  const styles = createNewsDetailStyles(colors, isDarkMode);
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -49,18 +45,19 @@ const NewsDetailScreen = ({ route, navigation }) => {
 
   const renderNewsItem = ({ item: article, index }) => (
     <TouchableOpacity
-      style={styles.newsCard}
+      className="mb-4 rounded-xl overflow-hidden flex-row p-3"
+      style={{ backgroundColor: colors.cardBackground }}
       onPress={() => handleNewsLink(article.url)}
       activeOpacity={0.7}
     >
       {article.imageUrl ? (
         <Image
           source={{ uri: article.imageUrl }}
-          style={styles.newsImage}
+          className="w-24 h-24 rounded-lg"
           resizeMode="cover"
         />
       ) : (
-        <View style={[styles.newsImage, styles.placeholderImage]}>
+        <View className="w-24 h-24 rounded-lg items-center justify-center" style={{ backgroundColor: colors.border }}>
           <Ionicons 
             name="newspaper-outline" 
             size={24} 
@@ -68,16 +65,16 @@ const NewsDetailScreen = ({ route, navigation }) => {
           />
         </View>
       )}
-      <View style={styles.newsContent}>
-        <Text style={styles.newsTitle} numberOfLines={2}>
+      <View className="flex-1 ml-3">
+        <Text className="text-base font-semibold mb-1" numberOfLines={2} style={{ color: colors.textPrimary }}>
           {article.title}
         </Text>
-        <Text style={styles.newsDescription} numberOfLines={3}>
+        <Text className="text-sm mb-2" numberOfLines={3} style={{ color: colors.textSecondary }}>
           {article.description}
         </Text>
-        <View style={styles.newsFooter}>
-          <Text style={styles.newsSource}>{article.source}</Text>
-          <Text style={styles.newsDate}>{formatDate(article.publishedAt)}</Text>
+        <View className="flex-row items-center justify-between">
+          <Text className="text-xs font-medium" style={{ color: colors.textSecondary }}>{article.source}</Text>
+          <Text className="text-xs" style={{ color: colors.textSecondary }}>{formatDate(article.publishedAt)}</Text>
         </View>
       </View>
       <Ionicons name="open-outline" size={SIZES.iconSmall} color={colors.primary} />
@@ -85,50 +82,52 @@ const NewsDetailScreen = ({ route, navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}      <LinearGradient
         colors={[colors.primary, colors.primaryDark]}
-        style={styles.header}
+        className="flex-row items-center px-4 py-3 border-b"
+        style={{ borderBottomColor: colors.border }}
       >
         <TouchableOpacity
-          style={styles.backButton}
+          className="p-2"
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.textWhite} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Latest News</Text>
-        <View style={styles.headerRight}>
+        <Text className="flex-1 text-lg font-semibold text-center" style={{ color: colors.textWhite }}>Latest News</Text>
+        <View className="p-2">
           <Ionicons name="newspaper" size={24} color={colors.textWhite} />
         </View>
       </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{news.length}</Text>
-            <Text style={styles.statLabel}>Articles Found</Text>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="flex-row mx-4 my-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{news.length}</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Articles Found</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {news.filter(article => article.publishedAt && new Date(article.publishedAt) > new Date(Date.now() - 24*60*60*1000)).length}
             </Text>
-            <Text style={styles.statLabel}>Today's News</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Today's News</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {news.filter(article => article.source).length}
             </Text>
-            <Text style={styles.statLabel}>Sources</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Sources</Text>
           </View>
         </View>
 
         {news.length > 0 ? (
-          <>            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Latest News</Text>
-              <Text style={styles.sectionSubtitle}>Recent articles and updates from {location.name}</Text>
+          <>            <View className="px-4 mb-3">
+              <Text className="text-xl font-bold mb-1" style={{ color: colors.textPrimary }}>Latest News</Text>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>Recent articles and updates from {location.name}</Text>
             </View>
+              <View className="px-4">
               <FlatList
               data={news}
               renderItem={renderNewsItem}
@@ -136,12 +135,13 @@ const NewsDetailScreen = ({ route, navigation }) => {
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
+            </View>
           </>
         ) : (
-          <View style={styles.emptyState}>
+          <View className="flex-1 items-center justify-center px-8 py-16">
             <Ionicons name="newspaper-outline" size={60} color={colors.textSecondary} />
-            <Text style={styles.emptyTitle}>No News Available</Text>
-            <Text style={styles.emptyDescription}>
+            <Text className="text-xl font-bold mt-4 text-center" style={{ color: colors.textPrimary }}>No News Available</Text>
+            <Text className="text-sm mt-2 text-center" style={{ color: colors.textSecondary }}>
               We couldn't find any recent news for {location.name}. Try checking back later.
             </Text>
           </View>

@@ -11,29 +11,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SIZES } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { createAccommodationDetailStyles } from '../styles/AccommodationDetailStyles';
 
 const AccommodationDetailScreen = ({ navigation, route }) => {
   const { accommodation = [], location } = route.params || {};
   const { colors, isDarkMode } = useAppTheme();
 
-  // Create dynamic styles based on current theme
-  const styles = createAccommodationDetailStyles(colors, isDarkMode);
-
   const renderAccommodationItem = ({ item, index }) => (
-    <View style={styles.accommodationCard}>
-      <View style={styles.accommodationHeader}>
-        <View style={styles.accommodationInfo}>
-          <Text style={styles.accommodationName}>{item.name}</Text>
-          <View style={styles.typeContainer}>
-            <Text style={styles.accommodationType}>{item.type || 'Hotel'}</Text>
+    <View className="mb-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+      <View className="flex-row items-start justify-between mb-3">
+        <View className="flex-1">
+          <Text className="text-base font-bold mb-1" style={{ color: colors.textPrimary }}>{item.name}</Text>
+          <View className="px-2 py-1 rounded self-start" style={{ backgroundColor: colors.background }}>
+            <Text className="text-xs" style={{ color: colors.textSecondary }}>{item.type || 'Hotel'}</Text>
           </View>
         </View>
-        <View style={styles.accommodationMeta}>
+        <View className="flex-row items-center gap-2">
           {item.rating && (
-            <View style={styles.ratingContainer}>
+            <View className="flex-row items-center">
               <Ionicons name="star" size={16} color={colors.warning} />
-              <Text style={styles.rating}>{item.rating}</Text>
+              <Text className="text-sm ml-1 font-semibold" style={{ color: colors.textPrimary }}>{item.rating}</Text>
             </View>
           )}
           <Ionicons name="bed-outline" size={20} color={colors.primary} />
@@ -41,104 +37,107 @@ const AccommodationDetailScreen = ({ navigation, route }) => {
       </View>
       
       {item.address && (
-        <View style={styles.addressContainer}>
+        <View className="flex-row items-start mb-2">
           <Ionicons name="location-outline" size={16} color={colors.textSecondary} />
-          <Text style={styles.address}>{item.address}</Text>
+          <Text className="flex-1 text-xs ml-2" style={{ color: colors.textSecondary }}>{item.address}</Text>
         </View>
       )}
       
       {item.amenities && item.amenities.length > 0 && (
-        <View style={styles.amenitiesContainer}>
+        <View className="flex-row flex-wrap gap-2 mb-2">
           {item.amenities.slice(0, 3).map((amenity, amenityIndex) => (
-            <View key={amenityIndex} style={styles.amenityTag}>
-              <Text style={styles.amenityText}>{amenity}</Text>
+            <View key={amenityIndex} className="px-2 py-1 rounded-md" style={{ backgroundColor: colors.background }}>
+              <Text className="text-xs" style={{ color: colors.textSecondary }}>{amenity}</Text>
             </View>
           ))}
         </View>
       )}
       
       {item.distance && (
-        <View style={styles.distanceContainer}>
+        <View className="flex-row items-center mb-2">
           <Ionicons name="walk-outline" size={16} color={colors.textSecondary} />
-          <Text style={styles.distance}>{Math.round(item.distance)}m away</Text>
+          <Text className="text-xs ml-2" style={{ color: colors.textSecondary }}>{Math.round(item.distance)}m away</Text>
         </View>
       )}
       
       {item.priceRange && (
-        <View style={styles.priceContainer}>
-          <Text style={styles.priceLabel}>Price Range:</Text>
-          <Text style={styles.priceRange}>{item.priceRange}</Text>
+        <View className="flex-row items-center mb-2">
+          <Text className="text-xs font-medium" style={{ color: colors.textSecondary }}>Price Range:</Text>
+          <Text className="text-xs ml-2" style={{ color: colors.textPrimary }}>{item.priceRange}</Text>
         </View>
       )}
       
-      <Text style={styles.source}>Source: {item.source}</Text>
+      <Text className="text-xs mt-2" style={{ color: colors.textSecondary }}>Source: {item.source}</Text>
     </View>
   );
 
   const renderEmptyState = () => (
-    <View style={styles.emptyStateContainer}>
+    <View className="flex-1 items-center justify-center px-8 py-16">
       <Ionicons name="bed-outline" size={64} color={colors.textSecondary} />
-      <Text style={styles.emptyStateTitle}>No Accommodation Found</Text>
-      <Text style={styles.emptyStateText}>
+      <Text className="text-xl font-bold mt-4 text-center" style={{ color: colors.textPrimary }}>No Accommodation Found</Text>
+      <Text className="text-sm mt-2 text-center" style={{ color: colors.textSecondary }}>
         We couldn't find any hotels or accommodation options in this area. 
         Try searching for nearby cities or check back later.
       </Text>
       <TouchableOpacity 
-        style={styles.searchButton}
+        className="mt-4 px-6 py-3 rounded-lg"
+        style={{ backgroundColor: colors.primary }}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.searchButtonText}>Search Other Locations</Text>
+        <Text className="text-sm font-semibold" style={{ color: colors.textWhite }}>Search Other Locations</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       <LinearGradient
         colors={[colors.primary, colors.primaryDark]}
-        style={styles.header}
+        className="flex-row items-center px-4 py-3 border-b"
+        style={{ borderBottomColor: colors.border }}
       >
         <TouchableOpacity
-          style={styles.backButton}
+          className="p-2"
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.textWhite} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Accommodation</Text>
-        <View style={styles.headerRight}>
+        <Text className="flex-1 text-lg font-semibold text-center" style={{ color: colors.textWhite }}>Accommodation</Text>
+        <View className="p-2">
           <Ionicons name="bed" size={24} color={colors.textWhite} />
         </View>
       </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{accommodation.length}</Text>
-            <Text style={styles.statLabel}>Hotels Found</Text>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="flex-row mx-4 my-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{accommodation.length}</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Hotels Found</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {accommodation.filter(item => item.rating && item.rating >= 4).length}
             </Text>
-            <Text style={styles.statLabel}>Highly Rated</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Highly Rated</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {accommodation.filter(item => item.type?.toLowerCase().includes('luxury')).length}
             </Text>
-            <Text style={styles.statLabel}>Luxury Options</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Luxury Options</Text>
           </View>
         </View>
 
         {accommodation.length > 0 ? (
           <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Available Accommodation</Text>
-              <Text style={styles.sectionSubtitle}>Hotels, resorts, and lodging options</Text>
+            <View className="px-4 mb-3">
+              <Text className="text-xl font-bold mb-1" style={{ color: colors.textPrimary }}>Available Accommodation</Text>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>Hotels, resorts, and lodging options</Text>
             </View>
             
+            <View className="px-4">
             <FlatList
               data={accommodation}
               renderItem={renderAccommodationItem}
@@ -146,6 +145,7 @@ const AccommodationDetailScreen = ({ navigation, route }) => {
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
+            </View>
           </>
         ) : (
           renderEmptyState()

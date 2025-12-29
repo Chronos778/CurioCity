@@ -11,15 +11,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { COLORS, SIZES } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { createServicesDetailStyles } from '../styles/ServicesDetailStyles';
 
 const ServicesDetailScreen = ({ route, navigation }) => {
   const { location } = route.params;
   const services = location.services || [];
   const { colors, isDarkMode } = useAppTheme();
-
-  // Create dynamic styles based on current theme
-  const styles = createServicesDetailStyles(colors, isDarkMode);
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -62,85 +58,85 @@ const ServicesDetailScreen = ({ route, navigation }) => {
   };
 
   const renderServiceItem = ({ item: service, index }) => (
-    <View style={styles.itemCard}>
-      <View style={styles.itemHeader}>
-        <View style={[styles.serviceIconContainer, { backgroundColor: getServiceColor(service.type) + '20' }]}>
+    <View className="mb-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+      <View className="flex-row items-center justify-between mb-3">
+        <View className="w-12 h-12 rounded-full items-center justify-center" style={{ backgroundColor: getServiceColor(service.type) + '20' }}>
           <Ionicons 
             name={getServiceIcon(service.type)} 
             size={SIZES.iconMedium} 
             color={getServiceColor(service.type)} 
           />
         </View>
-        <View style={styles.itemInfo}>
-          <Text style={styles.itemName}>{service.name}</Text>
-          <Text style={styles.itemDescription}>{formatServiceType(service.type)}</Text>
+        <View className="flex-1 mx-3">
+          <Text className="text-base font-bold" style={{ color: colors.textPrimary }}>{service.name}</Text>
+          <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>{formatServiceType(service.type)}</Text>
         </View>
         {service.distance && (
-          <View style={styles.distanceContainer}>
+          <View className="flex-row items-center">
             <Ionicons name="location" size={SIZES.iconSmall} color={colors.primary} />
-            <Text style={styles.distanceText}>{formatDistance(service.distance)}</Text>
+            <Text className="text-xs ml-1" style={{ color: colors.primary }}>{formatDistance(service.distance)}</Text>
           </View>
         )}
       </View>
 
-      <View style={styles.itemDetails}>
-        <View style={styles.coordinatesContainer}>
-          <Ionicons name="navigate" size={SIZES.iconSmall} color={colors.textSecondary} />
-          <Text style={styles.coordinatesText} numberOfLines={1} ellipsizeMode="tail">
-            {service.coordinates?.latitude?.toFixed(3) || '0.000'}, {service.coordinates?.longitude?.toFixed(3) || '0.000'}
-          </Text>
-        </View>
+      <View className="flex-row items-center">
+        <Ionicons name="navigate" size={SIZES.iconSmall} color={colors.textSecondary} />
+        <Text className="flex-1 text-xs ml-2" numberOfLines={1} ellipsizeMode="tail" style={{ color: colors.textSecondary }}>
+          {service.coordinates?.latitude?.toFixed(3) || '0.000'}, {service.coordinates?.longitude?.toFixed(3) || '0.000'}
+        </Text>
       </View>
     </View>
   );
 
-  return (    <SafeAreaView style={styles.container}>
+  return (    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* Header */}
       <LinearGradient
         colors={[colors.primary, colors.primaryDark]}
-        style={styles.header}
+        className="flex-row items-center px-4 py-3 border-b"
+        style={{ borderBottomColor: colors.border }}
       >
         <TouchableOpacity
-          style={styles.backButton}
+          className="p-2"
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="arrow-back" size={24} color={colors.textWhite} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Services & Amenities</Text>
-        <View style={styles.headerRight}>
+        <Text className="flex-1 text-lg font-semibold text-center" style={{ color: colors.textWhite }}>Services & Amenities</Text>
+        <View className="p-2">
           <Ionicons name="business" size={24} color={colors.textWhite} />
         </View>      </LinearGradient>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Stats Section */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{services.length}</Text>
-            <Text style={styles.statLabel}>Total Services</Text>
+        <View className="flex-row mx-4 my-4 p-4 rounded-xl" style={{ backgroundColor: colors.cardBackground }}>
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>{services.length}</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Total Services</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {new Set(services.map(s => s.type?.split(',')[0]?.trim())).size}
             </Text>
-            <Text style={styles.statLabel}>Service Types</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Service Types</Text>
           </View>
-          <View style={styles.statDivider} />
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>
+          <View className="w-px mx-4" style={{ backgroundColor: colors.border }} />
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>
               {services.filter(s => s.distance && s.distance <= 1000).length}
             </Text>
-            <Text style={styles.statLabel}>Within 1km</Text>
+            <Text className="text-xs mt-1 text-center" style={{ color: colors.textSecondary }}>Within 1km</Text>
           </View>
         </View>
 
         {services.length > 0 ? (
           <>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Available Services</Text>
-              <Text style={styles.sectionSubtitle}>Services and amenities in {location.name}</Text>
+            <View className="px-4 mb-3">
+              <Text className="text-xl font-bold mb-1" style={{ color: colors.textPrimary }}>Available Services</Text>
+              <Text className="text-sm" style={{ color: colors.textSecondary }}>Services and amenities in {location.name}</Text>
             </View>
             
+            <View className="px-4">
             <FlatList
               data={services}
               renderItem={renderServiceItem}
@@ -148,12 +144,13 @@ const ServicesDetailScreen = ({ route, navigation }) => {
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
             />
+            </View>
           </>
         ) : (
-          <View style={styles.emptyState}>
+          <View className="flex-1 items-center justify-center px-8 py-16">
             <Ionicons name="business-outline" size={60} color={colors.textSecondary} />
-            <Text style={styles.emptyTitle}>No Services Found</Text>
-            <Text style={styles.emptyDescription}>
+            <Text className="text-xl font-bold mt-4 text-center" style={{ color: colors.textPrimary }}>No Services Found</Text>
+            <Text className="text-sm mt-2 text-center" style={{ color: colors.textSecondary }}>
               We couldn't find any services and amenities for {location.name}. This might be a remote area or the data might be loading.
             </Text>
           </View>

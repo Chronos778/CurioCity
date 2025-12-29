@@ -5,14 +5,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   SafeAreaView,
   FlatList,
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { COLORS, SIZES } from '../constants/colors';
+import { COLORS } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { LocationService } from '../services/LocationService';
 
@@ -21,9 +20,6 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Create dynamic styles based on current theme
-  const styles = createStyles(colors, isDarkMode);
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       Alert.alert('Please enter a location to search');
@@ -157,23 +153,40 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
   };
   const renderLocationItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.locationItem}
+      className="flex-row items-center py-3 px-2 rounded-lg border mb-2"
+      style={{ 
+        backgroundColor: colors.cardBackground, 
+        borderColor: colors.border,
+        shadowColor: colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: isDarkMode ? 0.3 : 0.05,
+        shadowRadius: 4,
+        elevation: 2,
+      }}
       onPress={() => handleLocationSelect(item)}
     >
-      <View style={styles.locationIcon}>
-        <Ionicons name="location" size={SIZES.iconMedium} color={colors.primary} />
+      <View className="w-10 h-10 rounded-full items-center justify-center mr-3" 
+        style={{ backgroundColor: colors.secondary + '20' }}
+      >
+        <Ionicons name="location" size={24} color={colors.primary} />
       </View>
-      <View style={styles.locationInfo}>
-        <Text style={styles.locationName}>{item.name}</Text>
-        <Text style={styles.locationAddress}>{item.formattedAddress}</Text>
+      <View className="flex-1">
+        <Text className="text-base font-semibold mb-1" style={{ color: colors.textPrimary }}>
+          {item.name}
+        </Text>
+        <Text className="text-xs" style={{ color: colors.textSecondary }}>
+          {item.formattedAddress}
+        </Text>
         {item.hasWikipediaData && (
-          <View style={styles.wikipediaBadge}>
-            <Ionicons name="library" size={SIZES.iconSmall} color={colors.primary} />
-            <Text style={styles.wikipediaBadgeText}>Wikipedia</Text>
+          <View className="flex-row items-center mt-1">
+            <Ionicons name="library" size={14} color={colors.primary} />
+            <Text className="text-xs font-medium ml-1" style={{ color: colors.primary }}>
+              Wikipedia
+            </Text>
           </View>
         )}
       </View>
-      <Ionicons name="chevron-forward" size={SIZES.iconSmall} color={colors.textSecondary} />
+      <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
     </TouchableOpacity>
   );
 
@@ -184,29 +197,53 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView style={styles.container}>
-        {/* Header */}        <View style={styles.header}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={SIZES.iconLarge} color={colors.textPrimary} />
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
+        {/* Header */}
+        <View className="flex-row items-center justify-between px-4 py-2 border-b" 
+          style={{ borderBottomColor: colors.border }}
+        >
+          <TouchableOpacity className="p-2" onPress={onClose}>
+            <Ionicons name="close" size={32} color={colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Search Location</Text>
-          <View style={styles.placeholder} />
-        </View>{/* Search Input */}        <View style={styles.searchContainer}>
+          <Text className="text-xl font-semibold" style={{ color: colors.textPrimary }}>
+            Search Location
+          </Text>
+          <View className="w-12" />
+        </View>
+
+        {/* Search Input */}
+        <View className="px-4 py-6">
           {/* Use Current Location Button */}
           <TouchableOpacity 
-            style={styles.currentLocationButton}
+            className="flex-row items-center justify-between rounded-lg px-4 py-3 mb-3 border"
+            style={{
+              backgroundColor: colors.cardBackground,
+              borderColor: colors.border,
+              shadowColor: colors.shadow,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDarkMode ? 0.3 : 0.1,
+              shadowRadius: 4,
+              elevation: 2,
+            }}
             onPress={handleUseCurrentLocation}
-          >            <View style={styles.currentLocationContent}>
-              <Ionicons name="location" size={SIZES.iconMedium} color={colors.primary} />
-              <Text style={styles.currentLocationText}>Use Current Location</Text>
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="location" size={24} color={colors.primary} />
+              <Text className="text-base font-semibold ml-2" style={{ color: colors.textPrimary }}>
+                Use Current Location
+              </Text>
             </View>
-            <Ionicons name="chevron-forward" size={SIZES.iconSmall} color={colors.textSecondary} />
+            <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
           </TouchableOpacity>
           
-          <View style={styles.searchInputRow}>
-            <View style={styles.searchInputContainer}>              <Ionicons name="search" size={SIZES.iconMedium} color={colors.textSecondary} />
+          <View className="flex-row items-center">
+            <View className="flex-1 flex-row items-center rounded-lg px-3 mr-2 border" 
+              style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            >
+              <Ionicons name="search" size={24} color={colors.textSecondary} />
               <TextInput
-                style={styles.searchInput}
+                className="flex-1 py-3 px-2 text-base"
+                style={{ color: colors.textPrimary }}
                 placeholder="Enter city, country, or landmark..."
                 placeholderTextColor={colors.textSecondary}
                 value={searchQuery}
@@ -214,27 +251,33 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
                 autoFocus
                 returnKeyType="search"
                 onSubmitEditing={handleSearch}
-              />              {searchQuery.length > 0 && (
+              />
+              {searchQuery.length > 0 && (
                 <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <Ionicons name="close-circle" size={SIZES.iconMedium} color={colors.textSecondary} />
+                  <Ionicons name="close-circle" size={24} color={colors.textSecondary} />
                 </TouchableOpacity>
-              )}</View>
-              <TouchableOpacity onPress={handleSearch} disabled={isLoading}>
+              )}
+            </View>
+            <TouchableOpacity onPress={handleSearch} disabled={isLoading}>
               <LinearGradient
                 colors={isDarkMode ? [colors.gradientStart, colors.gradientEnd] : [COLORS.gradientStart, COLORS.gradientEnd]}
-                style={styles.searchButton}
+                className="px-6 py-3 rounded-lg"
               >
-                <Text style={styles.searchButtonText}>
+                <Text className="text-base font-semibold" style={{ color: colors.textWhite }}>
                   {isLoading ? 'Searching...' : 'Search'}
                 </Text>
               </LinearGradient>
-            </TouchableOpacity></View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Search Results */}
         {searchResults.length > 0 && (
-          <View style={styles.resultsContainer}>
-            <Text style={styles.resultsTitle}>Search Results</Text>            <FlatList
+          <View className="flex-1 px-4">
+            <Text className="text-lg font-semibold mb-3" style={{ color: colors.textPrimary }}>
+              Search Results
+            </Text>
+            <FlatList
               data={searchResults}
               renderItem={renderLocationItem}
               keyExtractor={(item, index) => `search-result-${index}-${item.coordinates?.latitude || 0}-${item.coordinates?.longitude || 0}`}
@@ -244,21 +287,39 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
         )}
 
         {/* Popular Locations */}
-        <View style={styles.popularContainer}>
-          <Text style={styles.popularTitle}>Popular Destinations</Text>          <View style={styles.popularGrid}>            {[
+        <View className="px-4 pb-6">
+          <Text className="text-lg font-semibold mb-3" style={{ color: colors.textPrimary }}>
+            Popular Destinations
+          </Text>
+          <View className="flex-row flex-wrap justify-between">
+            {[
               { name: 'New York', country: 'USA' },
               { name: 'London', country: 'UK' },
               { name: 'Singapore', country: 'Singapore' },
               { name: 'Sydney', country: 'Australia' },
               { name: 'Paris', country: 'France' },
-              { name: 'Dubai', country: 'UAE' },].map((city, index) => (
+              { name: 'Dubai', country: 'UAE' },
+            ].map((city, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.popularItem}
+                className="w-[48%] py-3 px-2 rounded-lg mb-2 items-center border"
+                style={{
+                  backgroundColor: colors.cardBackground,
+                  borderColor: colors.border,
+                  shadowColor: colors.shadow,
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: isDarkMode ? 0.2 : 0.05,
+                  shadowRadius: 2,
+                  elevation: 1,
+                }}
                 onPress={() => handlePopularCitySelect(city.name, city.country)}
               >
-                <Text style={styles.popularItemText}>{city.name}</Text>
-                <Text style={styles.popularItemCountry}>{city.country}</Text>
+                <Text className="text-base font-semibold" style={{ color: colors.textPrimary }}>
+                  {city.name}
+                </Text>
+                <Text className="text-xs mt-1" style={{ color: colors.textSecondary }}>
+                  {city.country}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -267,194 +328,5 @@ const LocationSearchModal = ({ visible, onClose, onLocationSelect }) => {
     </Modal>
   );
 };
-
-// Create dynamic styles function that responds to theme
-const createStyles = (colors, isDarkMode) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  closeButton: {
-    padding: SIZES.sm,
-  },
-  headerTitle: {
-    fontSize: SIZES.h3,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  placeholder: {
-    width: SIZES.iconLarge + SIZES.sm * 2,
-  },
-  searchContainer: {
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.lg,
-  },
-  currentLocationButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.cardBackground,
-    paddingHorizontal: SIZES.md,
-    paddingVertical: SIZES.md,
-    borderRadius: SIZES.radiusMedium,
-    marginBottom: SIZES.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDarkMode ? 0.3 : 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  currentLocationContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  currentLocationText: {
-    fontSize: SIZES.body,
-    color: colors.textPrimary,
-    fontWeight: '600',
-    marginLeft: SIZES.sm,
-  },
-  searchInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  searchInputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.cardBackground,
-    borderRadius: SIZES.radiusMedium,
-    paddingHorizontal: SIZES.md,
-    marginRight: SIZES.sm,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  searchInput: {
-    flex: 1,
-    paddingVertical: SIZES.md,
-    paddingHorizontal: SIZES.sm,
-    fontSize: SIZES.body,
-    color: colors.textPrimary,
-  },
-  searchButton: {
-    paddingHorizontal: SIZES.lg,
-    paddingVertical: SIZES.md,
-    borderRadius: SIZES.radiusMedium,
-  },
-  searchButtonText: {
-    color: colors.textWhite,
-    fontSize: SIZES.body,
-    fontWeight: '600',
-  },
-  resultsContainer: {
-    flex: 1,
-    paddingHorizontal: SIZES.md,
-  },
-  resultsTitle: {
-    fontSize: SIZES.h4,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: SIZES.md,
-  },  locationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SIZES.md,
-    paddingHorizontal: SIZES.sm,
-    backgroundColor: colors.cardBackground,
-    marginBottom: SIZES.sm,
-    borderRadius: SIZES.radiusMedium,
-    borderWidth: 1,
-    borderColor: colors.border,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: isDarkMode ? 0.3 : 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  locationIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.secondary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: SIZES.md,
-  },
-  locationInfo: {
-    flex: 1,
-  },
-  locationName: {
-    fontSize: SIZES.body,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: SIZES.xs,
-  },
-  locationAddress: {
-    fontSize: SIZES.caption,
-    color: colors.textSecondary,
-  },
-  wikipediaBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: SIZES.xs,
-  },
-  wikipediaBadgeText: {
-    fontSize: SIZES.small,
-    color: colors.primary,
-    marginLeft: SIZES.xs,
-    fontWeight: '500',
-  },
-  popularContainer: {
-    paddingHorizontal: SIZES.md,
-    paddingBottom: SIZES.lg,
-  },
-  popularTitle: {
-    fontSize: SIZES.h4,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: SIZES.md,
-  },
-  popularGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },  popularItem: {
-    width: '48%',
-    backgroundColor: colors.cardBackground,
-    paddingVertical: SIZES.md,
-    paddingHorizontal: SIZES.sm,
-    borderRadius: SIZES.radiusMedium,
-    marginBottom: SIZES.sm,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: isDarkMode ? 0.2 : 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  popularItemText: {
-    fontSize: SIZES.body,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  popularItemCountry: {
-    fontSize: SIZES.caption,
-    color: colors.textSecondary,
-    marginTop: SIZES.xs,
-  },
-});
 
 export default LocationSearchModal;

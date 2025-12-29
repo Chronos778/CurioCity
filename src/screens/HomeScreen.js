@@ -10,16 +10,13 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { SIZES } from '../constants/colors';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { LocationService } from '../services/LocationService';
 import LocationSearchModal from '../components/LocationSearchModal';
-import { createHomeScreenStyles } from '../styles/HomeScreenStyles';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ============ MOCK DATA ============
-// Static data matching API structure for seamless future integration
 const MOCK_DATA = {
   placesToVisit: [
     { name: 'Central Park', type: 'park', coordinates: { latitude: 40.7829, longitude: -73.9654 }, distance: 1200, rating: 4.8 },
@@ -99,10 +96,7 @@ const HomeScreen = ({ navigation }) => {
 
   // Card dimensions for FlatList snap
   const CARD_WIDTH = SCREEN_WIDTH * 0.75;
-  const SNAP_INTERVAL = CARD_WIDTH + SIZES.md;
-
-  // Create dynamic styles based on current theme
-  const styles = createHomeScreenStyles(colors, isDarkMode);
+  const SNAP_INTERVAL = CARD_WIDTH + 16;
 
   // Get middle index for centering highest rated
   const getMiddleIndex = (length) => Math.floor(length / 2);
@@ -111,11 +105,10 @@ const HomeScreen = ({ navigation }) => {
   const sortByRating = (data) => {
     if (!data || data.length === 0) return [];
     const sorted = [...data].sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    // Rearrange so highest rated is in the middle for center display
     if (sorted.length >= 3) {
       const middle = Math.floor(sorted.length / 2);
-      const highestRated = sorted.shift(); // Remove first (highest)
-      sorted.splice(middle, 0, highestRated); // Insert at middle
+      const highestRated = sorted.shift();
+      sorted.splice(middle, 0, highestRated);
     }
     return sorted;
   };
@@ -124,7 +117,7 @@ const HomeScreen = ({ navigation }) => {
   const placesToVisit = sortByRating(MOCK_DATA.placesToVisit);
   const restaurants = sortByRating(MOCK_DATA.restaurants);
   const accommodation = sortByRating(MOCK_DATA.accommodation);
-  const holyPlaces = MOCK_DATA.holyPlaces; // No rating for holy places
+  const holyPlaces = MOCK_DATA.holyPlaces;
   const services = MOCK_DATA.services;
   const news = MOCK_DATA.news;
 
@@ -132,7 +125,7 @@ const HomeScreen = ({ navigation }) => {
     initializeLocation();
   }, []);
 
-  // Scroll to center (highest rated) after component mounts
+  // Scroll to center after component mounts
   useEffect(() => {
     if (!isLoading) {
       const scrollTimeout = setTimeout(() => {
@@ -229,14 +222,13 @@ const HomeScreen = ({ navigation }) => {
 
   // Render scroll indicators for carousels
   const renderScrollIndicators = (totalItems, activeIndex) => (
-    <View style={styles.scrollIndicatorContainer}>
+    <View className="flex-row justify-center items-center py-2">
       {Array.from({ length: totalItems }).map((_, index) => (
         <View
           key={`dot-${index}`}
-          style={[
-            styles.scrollDot,
-            activeIndex === index && styles.scrollDotActive,
-          ]}
+          className={`w-2 h-2 rounded-full mx-1 ${
+            activeIndex === index ? 'bg-blue-500 w-6' : 'bg-gray-400 dark:bg-gray-600'
+          }`}
         />
       ))}
     </View>
@@ -246,55 +238,67 @@ const HomeScreen = ({ navigation }) => {
 
   const renderPlaceCard = ({ item }) => (
     <TouchableOpacity
-      style={styles.placeCard}
+      className="mr-4"
+      style={{ width: CARD_WIDTH }}
       onPress={() => navigateTo('PlacesDetail')}
       activeOpacity={0.9}
     >
-      <View style={[styles.cardIconBox, { backgroundColor: SECTION_COLORS.places }]}>
-        <Ionicons name="camera" size={56} color="#FFF" />
-        {item.rating && (
-          <View style={styles.cardRatingBadge}>
-            <Ionicons name="star" size={14} color="#FFD700" />
-            <Text style={styles.cardRatingText}>{item.rating}</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.cardSubtitle} numberOfLines={1}>
-          {item.distance ? `${(item.distance / 1000).toFixed(1)} km away` : item.type}
-        </Text>
-        <Text style={styles.cardDetailsLabel}>View Details</Text>
+      <View className="rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700" style={{ backgroundColor: colors.cardBackground }}>
+        <View className="items-center justify-center py-12" style={{ backgroundColor: SECTION_COLORS.places }}>
+          <Ionicons name="camera" size={56} color="#FFF" />
+          {item.rating && (
+            <View className="absolute top-3 right-3 flex-row items-center bg-white rounded-full px-2 py-1">
+              <Ionicons name="star" size={14} color="#FFD700" />
+              <Text className="text-xs font-semibold ml-1">{item.rating}</Text>
+            </View>
+          )}
+        </View>
+        <View className="p-4">
+          <Text className="text-lg font-bold mb-1" style={{ color: colors.textPrimary }} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text className="text-sm mb-2" style={{ color: colors.textSecondary }} numberOfLines={1}>
+            {item.distance ? `${(item.distance / 1000).toFixed(1)} km away` : item.type}
+          </Text>
+          <Text className="text-sm font-medium" style={{ color: colors.primary }}>
+            View Details
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   const renderRestaurantCard = ({ item }) => (
     <TouchableOpacity
-      style={styles.restaurantCard}
+      className="mr-4"
+      style={{ width: CARD_WIDTH }}
       onPress={() => navigateTo('RestaurantsDetail')}
       activeOpacity={0.9}
     >
-      <View style={[styles.restaurantIconBox, { backgroundColor: SECTION_COLORS.restaurants }]}>
-        <Ionicons name="restaurant" size={56} color="#FFF" />
-        {item.rating && (
-          <View style={styles.cardRatingBadge}>
-            <Ionicons name="star" size={14} color="#FFD700" />
-            <Text style={styles.cardRatingText}>{item.rating}</Text>
-          </View>
-        )}
-      </View>
-      <View style={styles.restaurantContent}>
-        <Text style={styles.restaurantName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.restaurantCategory} numberOfLines={1}>
-          {item.categories?.join(' | ') || item.address}
-        </Text>
-        <View style={styles.restaurantButtonRow}>
-          <View style={styles.restaurantButton}>
-            <Text style={styles.restaurantButtonText}>Details</Text>
-          </View>
-          <View style={styles.restaurantButton}>
-            <Text style={styles.restaurantButtonText}>View Menu</Text>
+      <View className="rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700" style={{ backgroundColor: colors.cardBackground }}>
+        <View className="items-center justify-center py-12" style={{ backgroundColor: SECTION_COLORS.restaurants }}>
+          <Ionicons name="restaurant" size={56} color="#FFF" />
+          {item.rating && (
+            <View className="absolute top-3 right-3 flex-row items-center bg-white rounded-full px-2 py-1">
+              <Ionicons name="star" size={14} color="#FFD700" />
+              <Text className="text-xs font-semibold ml-1">{item.rating}</Text>
+            </View>
+          )}
+        </View>
+        <View className="p-4">
+          <Text className="text-lg font-bold mb-1" style={{ color: colors.textPrimary }} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text className="text-sm mb-3" style={{ color: colors.textSecondary }} numberOfLines={1}>
+            {item.categories?.join(' | ') || item.address}
+          </Text>
+          <View className="flex-row gap-2">
+            <View className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg py-2 items-center">
+              <Text className="text-xs font-medium" style={{ color: colors.textPrimary }}>Details</Text>
+            </View>
+            <View className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg py-2 items-center">
+              <Text className="text-xs font-medium" style={{ color: colors.textPrimary }}>View Menu</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -304,22 +308,27 @@ const HomeScreen = ({ navigation }) => {
   const renderAccommodationCard = (item, index) => (
     <TouchableOpacity
       key={`accommodation-${index}`}
-      style={styles.accommodationCard}
+      className="mb-3"
+      style={{ width: (SCREEN_WIDTH - 48) / 2 }}
       onPress={() => navigateTo('AccommodationDetail')}
       activeOpacity={0.9}
     >
-      <View style={[styles.accommodationImageBox, { backgroundColor: SECTION_COLORS.accommodation }]}>
-        <Ionicons name="bed" size={64} color="#FFF" />
-        <TouchableOpacity style={styles.accommodationBookmark} activeOpacity={0.7}>
-          <Ionicons name="bookmark-outline" size={18} color={colors.textSecondary} />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.accommodationContent}>
-        <Text style={styles.accommodationName} numberOfLines={2}>{item.name}</Text>
-        <View style={styles.accommodationMeta}>
-          <Text style={styles.accommodationRating}>{item.priceRange}</Text>
-          <Text style={styles.accommodationDivider}>|</Text>
-          <Text style={styles.accommodationType} numberOfLines={1}>{item.type}</Text>
+      <View className="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700" style={{ backgroundColor: colors.cardBackground }}>
+        <View className="items-center justify-center py-16 relative" style={{ backgroundColor: SECTION_COLORS.accommodation }}>
+          <Ionicons name="bed" size={64} color="#FFF" />
+          <TouchableOpacity className="absolute top-2 right-2 p-1" activeOpacity={0.7}>
+            <Ionicons name="bookmark-outline" size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+        <View className="p-3">
+          <Text className="text-sm font-bold mb-2" style={{ color: colors.textPrimary }} numberOfLines={2}>
+            {item.name}
+          </Text>
+          <View className="flex-row items-center">
+            <Text className="text-xs font-semibold" style={{ color: colors.primary }}>{item.priceRange}</Text>
+            <Text className="text-xs mx-2" style={{ color: colors.textSecondary }}>|</Text>
+            <Text className="text-xs flex-1" style={{ color: colors.textSecondary }} numberOfLines={1}>{item.type}</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -327,62 +336,61 @@ const HomeScreen = ({ navigation }) => {
 
   const renderHolyPlaceCard = ({ item }) => (
     <TouchableOpacity
-      style={styles.holyPlaceCard}
+      className="mr-4"
+      style={{ width: CARD_WIDTH }}
       onPress={() => navigateTo('HolyPlacesDetail')}
       activeOpacity={0.9}
     >
-      <View style={[styles.holyPlaceIconBox, { backgroundColor: SECTION_COLORS.holyPlaces }]}>
-        <Ionicons name="flower" size={64} color="#FFF" />
-      </View>
-      <View style={styles.holyPlaceContent}>
-        <Text style={styles.holyPlaceName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.holyPlaceType}>{item.type} | {item.religion}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderNewsCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.newsCard}
-      onPress={() => navigateTo('NewsDetail')}
-      activeOpacity={0.7}
-    >
-      <View style={styles.newsIconBox}>
-        <Ionicons name="newspaper" size={48} color="#333" />
-      </View>
-      <View style={styles.newsContent}>
-        <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
-        <Text style={styles.newsDescription} numberOfLines={2}>{item.description}</Text>
+      <View className="rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700" style={{ backgroundColor: colors.cardBackground }}>
+        <View className="items-center justify-center py-16" style={{ backgroundColor: SECTION_COLORS.holyPlaces }}>
+          <Ionicons name="flower" size={64} color="#FFF" />
+        </View>
+        <View className="p-4">
+          <Text className="text-lg font-bold mb-1" style={{ color: colors.textPrimary }} numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text className="text-sm" style={{ color: colors.textSecondary }}>
+            {item.type} | {item.religion}
+          </Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
+        <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Getting your location...</Text>
+          <Text className="mt-4 text-base" style={{ color: colors.textSecondary }}>
+            Getting your location...
+          </Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: colors.background }}>
       {/* ============ COMPACT HEADER ============ */}
-      <View style={styles.compactHeader}>
+      <View className="flex-row items-center justify-between px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
         <TouchableOpacity
-          style={styles.headerCityButton}
+          className="flex-row items-center flex-1"
           onPress={() => setShowSearchModal(true)}
         >
-          <Ionicons name="location-outline" size={SIZES.iconMedium} color={colors.primary} />
-          <Text style={styles.cityName}>{currentLocation?.name || 'Select City'}</Text>
+          <Ionicons name="location-outline" size={24} color={colors.primary} />
+          <Text className="text-xl font-bold ml-2" style={{ color: colors.textPrimary }}>
+            {currentLocation?.name || 'Select City'}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
+        <TouchableOpacity 
+          className="w-10 h-10 rounded-full items-center justify-center border" 
+          style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+          onPress={toggleTheme}
+        >
           <Ionicons
             name={isDarkMode ? 'sunny' : 'moon'}
-            size={SIZES.iconMedium}
+            size={24}
             color={colors.textPrimary}
           />
         </TouchableOpacity>
@@ -390,23 +398,35 @@ const HomeScreen = ({ navigation }) => {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
       >
         {/* ============ CITY INFO CARD ============ */}
-        <View style={styles.cityInfoCard}>
-          <Text style={styles.cityDescription}>
+        <View className="mx-4 my-6 rounded-2xl border p-6" 
+          style={{ 
+            backgroundColor: colors.cardBackground, 
+            borderColor: colors.border,
+            shadowColor: colors.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: isDarkMode ? 0.4 : 0.15,
+            shadowRadius: 8,
+            elevation: 5,
+          }}
+        >
+          <Text className="text-base mb-6 leading-6" style={{ color: colors.textSecondary }}>
             {getFirstSentence(currentLocation?.description) || 'Discover amazing places around you.'}
           </Text>
-          <View style={styles.cityInfoActions}>
+          <View className="flex-row items-center justify-between">
             <TouchableOpacity
-              style={styles.readMoreButton}
+              className="flex-row items-center px-6 py-3 rounded-lg"
+              style={{ backgroundColor: isDarkMode ? colors.surface : '#1a1a1a' }}
               onPress={() => navigateTo('LocationDetail')}
             >
-              <Text style={styles.readMoreText}>read more</Text>
+              <Text className="text-white font-medium mr-2">read more</Text>
               <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.searchCircle}
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{ backgroundColor: colors.cardBackground }}
               onPress={() => setShowSearchModal(true)}
             >
               <Ionicons name="search" size={24} color={colors.textPrimary} />
@@ -418,30 +438,42 @@ const HomeScreen = ({ navigation }) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.chipScrollView}
-          contentContainerStyle={styles.chipScrollContent}
+          className="mb-4"
+          contentContainerClassName="px-4"
         >
-          <TouchableOpacity style={styles.chip} onPress={() => navigateTo('HistoryDetail')}>
-            <Ionicons name="library-outline" size={16} color={SECTION_COLORS.history} style={styles.chipIcon} />
-            <Text style={styles.chipLabel}>History</Text>
+          <TouchableOpacity 
+            className="flex-row items-center rounded-full px-4 py-2 mr-3 border" 
+            style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            onPress={() => navigateTo('HistoryDetail')}
+          >
+            <Ionicons name="library-outline" size={16} color={SECTION_COLORS.history} />
+            <Text className="ml-2 text-sm font-medium" style={{ color: colors.textPrimary }}>History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chip} onPress={() => navigateTo('RestaurantsDetail')}>
-            <Ionicons name="restaurant-outline" size={16} color={SECTION_COLORS.restaurants} style={styles.chipIcon} />
-            <Text style={styles.chipLabel}>Restaurants</Text>
+          <TouchableOpacity 
+            className="flex-row items-center rounded-full px-4 py-2 mr-3 border" 
+            style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            onPress={() => navigateTo('RestaurantsDetail')}
+          >
+            <Ionicons name="restaurant-outline" size={16} color={SECTION_COLORS.restaurants} />
+            <Text className="ml-2 text-sm font-medium" style={{ color: colors.textPrimary }}>Restaurants</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.chip} onPress={() => navigateTo('ServicesDetail')}>
-            <Ionicons name="business-outline" size={16} color={SECTION_COLORS.services} style={styles.chipIcon} />
-            <Text style={styles.chipLabel}>Services</Text>
+          <TouchableOpacity 
+            className="flex-row items-center rounded-full px-4 py-2 border" 
+            style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            onPress={() => navigateTo('ServicesDetail')}
+          >
+            <Ionicons name="business-outline" size={16} color={SECTION_COLORS.services} />
+            <Text className="ml-2 text-sm font-medium" style={{ color: colors.textPrimary }}>Services</Text>
           </TouchableOpacity>
         </ScrollView>
 
         {/* ============ PLACES TO VISIT ============ */}
         {placesToVisit.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Places To Visit</Text>
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Places To Visit</Text>
               <TouchableOpacity onPress={() => navigateTo('PlacesDetail')}>
-                <Text style={styles.viewAllText}>View All</Text>
+                <Text className="text-sm font-medium" style={{ color: colors.primary }}>View All</Text>
               </TouchableOpacity>
             </View>
             <FlatList
@@ -451,7 +483,7 @@ const HomeScreen = ({ navigation }) => {
               keyExtractor={(item, index) => `place-${index}`}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalListContent}
+              contentContainerClassName="px-4"
               snapToInterval={SNAP_INTERVAL}
               snapToAlignment="start"
               decelerationRate="fast"
@@ -464,11 +496,11 @@ const HomeScreen = ({ navigation }) => {
 
         {/* ============ LOCAL RESTAURANTS ============ */}
         {restaurants.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Local Restaurants</Text>
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Local Restaurants</Text>
               <TouchableOpacity onPress={() => navigateTo('RestaurantsDetail')}>
-                <Text style={styles.viewAllText}>View All</Text>
+                <Text className="text-sm font-medium" style={{ color: colors.primary }}>View All</Text>
               </TouchableOpacity>
             </View>
             <FlatList
@@ -478,7 +510,7 @@ const HomeScreen = ({ navigation }) => {
               keyExtractor={(item, index) => `restaurant-${index}`}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalListContent}
+              contentContainerClassName="px-4"
               snapToInterval={SNAP_INTERVAL}
               snapToAlignment="start"
               decelerationRate="fast"
@@ -491,11 +523,11 @@ const HomeScreen = ({ navigation }) => {
 
         {/* ============ NEARBY ACCOMMODATION ============ */}
         {accommodation.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Nearby Accommodation</Text>
+          <View className="mb-6">
+            <View className="px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Nearby Accommodation</Text>
             </View>
-            <View style={styles.accommodationGrid}>
+            <View className="flex-row flex-wrap px-4 gap-3">
               {accommodation.slice(0, 4).map((item, index) => renderAccommodationCard(item, index))}
             </View>
           </View>
@@ -503,9 +535,9 @@ const HomeScreen = ({ navigation }) => {
 
         {/* ============ HOLY PLACES ============ */}
         {holyPlaces.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Holy Places</Text>
+          <View className="mb-6">
+            <View className="px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Holy Places</Text>
             </View>
             <FlatList
               ref={holyPlacesListRef}
@@ -514,7 +546,7 @@ const HomeScreen = ({ navigation }) => {
               keyExtractor={(item, index) => `holy-${index}`}
               horizontal
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalListContent}
+              contentContainerClassName="px-4"
               snapToInterval={SNAP_INTERVAL}
               snapToAlignment="start"
               decelerationRate="fast"
@@ -527,76 +559,74 @@ const HomeScreen = ({ navigation }) => {
 
         {/* ============ SERVICES AND AMENITIES ============ */}
         {services.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Services and Amenities</Text>
+          <View className="mb-6">
+            <View className="px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Services and Amenities</Text>
             </View>
-            <View style={styles.serviceListCard}>
-              <ScrollView
-                style={styles.serviceScrollView}
-                contentContainerStyle={styles.serviceScrollContent}
-                showsVerticalScrollIndicator={false}
-                nestedScrollEnabled={true}
-              >
-                {services.map((service, index) => (
-                  <TouchableOpacity
-                    key={`service-${index}`}
-                    style={[
-                      styles.serviceRow,
-                      index === services.length - 1 && styles.serviceRowLast,
-                    ]}
-                    onPress={() => navigateTo('ServicesDetail')}
+            <View className="mx-4 rounded-2xl border overflow-hidden" 
+              style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            >
+              {services.map((service, index) => (
+                <TouchableOpacity
+                  key={`service-${index}`}
+                  className={`flex-row items-center p-4 ${index !== services.length - 1 ? 'border-b' : ''}`}
+                  style={{ borderBottomColor: colors.border }}
+                  onPress={() => navigateTo('ServicesDetail')}
+                >
+                  <View className="w-10 h-10 rounded-full items-center justify-center mr-3" 
+                    style={{ backgroundColor: SECTION_COLORS.services + '20' }}
                   >
-                    <View style={[styles.serviceIconCircle, { backgroundColor: SECTION_COLORS.services + '20' }]}>
-                      <Ionicons name="business" size={18} color={SECTION_COLORS.services} />
-                    </View>
-                    <View style={styles.serviceInfo}>
-                      <Text style={styles.serviceName}>{service.name}</Text>
-                      <Text style={styles.serviceLink}>call detail and review</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                    <Ionicons name="business" size={18} color={SECTION_COLORS.services} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-medium mb-1" style={{ color: colors.textPrimary }}>
+                      {service.name}
+                    </Text>
+                    <Text className="text-xs" style={{ color: colors.primary }}>
+                      call detail and review
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         )}
 
         {/* ============ LATEST NEWS IN AREA ============ */}
         {news.length > 0 && (
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Latest News in Area</Text>
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between px-4 mb-3">
+              <Text className="text-2xl font-bold" style={{ color: colors.textPrimary }}>Latest News in Area</Text>
               <TouchableOpacity onPress={() => navigateTo('NewsDetail')}>
-                <Text style={styles.viewAllText}>View All</Text>
+                <Text className="text-sm font-medium" style={{ color: colors.primary }}>View All</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.newsContainer}>
-              <ScrollView
-                style={styles.newsScrollView}
-                contentContainerStyle={styles.newsScrollContent}
-                showsVerticalScrollIndicator={false}
-                nestedScrollEnabled={true}
-              >
-                {news.map((item, index) => (
-                  <TouchableOpacity
-                    key={`news-${index}`}
-                    style={[
-                      styles.newsCard,
-                      index === news.length - 1 && styles.newsCardLast,
-                    ]}
-                    onPress={() => navigateTo('NewsDetail')}
-                    activeOpacity={0.7}
+            <View className="mx-4 rounded-2xl border overflow-hidden" 
+              style={{ backgroundColor: colors.cardBackground, borderColor: colors.border }}
+            >
+              {news.map((item, index) => (
+                <TouchableOpacity
+                  key={`news-${index}`}
+                  className={`flex-row p-4 ${index !== news.length - 1 ? 'border-b' : ''}`}
+                  style={{ borderBottomColor: colors.border }}
+                  onPress={() => navigateTo('NewsDetail')}
+                  activeOpacity={0.7}
+                >
+                  <View className="w-16 h-16 rounded-xl items-center justify-center mr-3" 
+                    style={{ backgroundColor: SECTION_COLORS.news }}
                   >
-                    <View style={styles.newsIconBox}>
-                      <Ionicons name="newspaper" size={36} color="#333" />
-                    </View>
-                    <View style={styles.newsContent}>
-                      <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
-                      <Text style={styles.newsDescription} numberOfLines={2}>{item.description}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                    <Ionicons name="newspaper" size={36} color="#333" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold mb-1" style={{ color: colors.textPrimary }} numberOfLines={2}>
+                      {item.title}
+                    </Text>
+                    <Text className="text-sm" style={{ color: colors.textSecondary }} numberOfLines={2}>
+                      {item.description}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         )}
