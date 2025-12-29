@@ -1,49 +1,46 @@
 import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
 const LatestNews = memo(({ data, onItemPress }) => {
   const { colors } = useAppTheme();
 
+  const getBackgroundColor = () => {
+    // Get the actual background color from the theme
+    return colors.background || '#FFFFFF';
+  };
+
   return (
-    <View className="mb-8 px-6">
-      <View className="flex-row items-center justify-center mb-6">
-        <View className="h-[1px] flex-1 bg-gray-200 dark:bg-gray-700" />
-        <Text className="text-xl font-bold mx-4 tracking-wide" style={{ color: colors.textPrimary }}>
+    <View className="mb-10 px-6">
+      <View className="flex-row items-center justify-center mb-8">
+        <View className="h-[2px] flex-1 bg-gray-300 dark:bg-gray-600" />
+        <Text className="text-2xl font-bold mx-6 tracking-wide" style={{ color: colors.textPrimary }}>
           Latest News
         </Text>
-        <View className="h-[1px] flex-1 bg-gray-200 dark:bg-gray-700" />
+        <View className="h-[2px] flex-1 bg-gray-300 dark:bg-gray-600" />
       </View>
       
       <View 
-        className="rounded-3xl overflow-hidden border h-80"
-        style={{ 
-          backgroundColor: colors.cardBackground,
-          borderColor: colors.border,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 8,
-          elevation: 3,
-        }}
+        className="overflow-hidden h-[500px] relative"
       >
-        <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false}>
+        <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }}>
           {data.map((item, index) => (
             <TouchableOpacity 
               key={index}
-              className="p-5 border-b"
-              style={{ borderBottomColor: colors.border }}
+              className="p-6"
               onPress={() => onItemPress(item)}
+              activeOpacity={0.7}
             >
               <View className="flex-row">
-                <View className="h-20 w-20 bg-gray-200 dark:bg-gray-700 rounded-xl mr-4 items-center justify-center">
-                    <Text className="text-[10px] text-gray-500 font-medium">News Image</Text>
+                <View className="h-28 w-28 bg-gray-200 dark:bg-gray-700 rounded-2xl mr-5 items-center justify-center">
+                    <Text className="text-xs text-gray-500 font-medium">News Image</Text>
                 </View>
                 <View className="flex-1 justify-center">
-                    <Text className="font-bold text-base mb-2 leading-5" style={{ color: colors.textPrimary }}>
+                    <Text className="font-bold text-lg mb-2 leading-6" style={{ color: colors.textPrimary }}>
                         {item.title}
                     </Text>
-                    <Text className="text-sm leading-5" numberOfLines={2} style={{ color: colors.textSecondary }}>
+                    <Text className="text-base leading-6" numberOfLines={2} style={{ color: colors.textSecondary }}>
                         {item.description}
                     </Text>
                 </View>
@@ -51,6 +48,14 @@ const LatestNews = memo(({ data, onItemPress }) => {
             </TouchableOpacity>
           ))}
         </ScrollView>
+        <LinearGradient
+          colors={[getBackgroundColor(), 'transparent']}
+          className="absolute top-0 left-0 right-0 h-16 pointer-events-none"
+        />
+        <LinearGradient
+          colors={['transparent', getBackgroundColor()]}
+          className="absolute bottom-0 left-0 right-0 h-16 pointer-events-none"
+        />
       </View>
     </View>
   );
